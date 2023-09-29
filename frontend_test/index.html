@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test page</title>
+    <style>
+        #secret-page {
+            display: none;
+        }
+        #login-page {
+            display: none;
+        }
+        #error-message {
+            color: red;
+        }
+    </style>
+    <script type="module">
+        import getCookie from './util.js';
+        const $ = (id) => document.getElementById(id);
+
+        const login = async (username, password) => {
+            const response = await fetch("/api/login/", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    "X-CSRFToken": getCookie('csrftoken'),
+                },
+                credentials: "same-origin",
+                body: JSON.stringify({
+                    username,
+                    password,
+                }),
+            });
+
+            const data = await response.json();
+            console.log("Login response:", response.status, data);
+
+            if (response.status === 200) {
+                main();
+            } else {
+                $('error-message').innerText = data.details;
+            }
+        };
+
+        $('login-button').addEventListener('click', async () => {
+            console.log('Send user details to server!');
+            const username = $('username').value;
+            const password = $('password').value;
+            await login(username, password);
+        });
+
+        const logout = async () => {
+            const response = await fetch("/api/logout/", {
+                credentials: "same-origin",
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    "X-CSRFToken": getCookie('csrftoken'),
+                },
+            });
+            if (response.status === 200) {
+                console.log('Logged out!');
+                main();
+            } else {
+                throw new Error(data.detail);
+            }
+        };
+
+        $('logout-button').addEventListener('click', logout);
+
+        const getSession = async () => {
+            try {
+                const response = await fetch("/api/session/", {
+                    credentials: "same-origin",
+                });
+                const data = await response.json();
+                return data;
+            } catch (err) {
+                console.log("Get session error:", err);
+            }
+        };
+
+        const main = async () => {
+            console.log('Page loaded!');
+            const user = await getSession();
+            if (user.authenticated) {
+                // if it is logged in show the secret page with the name
+                console.log('Logged in!', user);
+                $('loading-page').style.display = 'none';
+                $('login-page').style.display = 'none';
+                $('secret-page').style.display = 'block';
+                $('data-username').innerText = user.username;
+            } else {
+                // if it is not logged in show the login page
+                console.log('Not logged in', user);
+                $('loading-page').style.display = 'none';
+                $('login-page').style.display = 'block';
+                $('secret-page').style.display = 'none';
+            }
+
+        }
+        window.addEventListener('load', main);
+    </script>
+</head>
+<body>
+<div id="login-page">
+    <div>
+        <span>Username: </span><input id="username"/>
+    </div>
+    <div>
+        <span>Password: </span><input id="password" type="password"/>
+    </div>
+    <div><button id="login-button">Send</button></div>
+    <div id="error-message"></div>
+    <div><a href="create_account.html">Create new account</a></div>
+    <div><a href="recover_password.html">Forgot password</a></div>
+</div>
+<div id="secret-page">
+    <div><span>Hello, </span><span id="data-username"></span></div>
+    <button id="logout-button">Logout</button>
+</div>
+<div id="loading-page">
+    Loading ...
+</div>
+</body>
+</html>

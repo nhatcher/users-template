@@ -1,0 +1,21 @@
+[Unit]
+Description=gunicorn daemon
+# Requires=gunicorn.socket
+After=network.target
+
+[Service]
+Type=notify
+# the specific user that our service will run as
+User=django
+Group=django
+WorkingDirectory=/var/lib/django/users-template/
+ExecStart=/var/lib/django/users-template/venv/bin/gunicorn settings.wsgi\
+          --chdir /var/lib/django/users-template/server/\
+          --access-logfile /var/log/django/access.log\
+          --error-logfile /var/log/django/error.log
+ExecReload=/bin/kill -s HUP $MAINPID
+KillMode=mixed
+TimeoutStopSec=5
+PrivateTmp=true
+
+[Install]

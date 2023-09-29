@@ -1,0 +1,17 @@
+# /etc/caddy/Caddyfile
+<HOST> {
+        root * /var/www/<NAME>/
+
+        # django API
+        reverse_proxy /api/* localhost:8000
+
+        # admin API
+        reverse_proxy /admin/* localhost:8000
+
+        file_server
+}
+
+log {
+	output file /var/log/access.log
+}
+

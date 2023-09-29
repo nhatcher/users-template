@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Create account</title>
+    <style>
+        #error-message {
+            color: red;
+            display: none;
+        }
+        #success-message {
+            color: greenyellow;
+            display: none;
+        }
+    </style>
+    <script type="module">
+        import getCookie from './util.js'
+        const $ = (id) => document.getElementById(id);
+        const main = () => {
+            const sendButton = $('send-button');
+            const errorMessage = $('error-message');
+            const successMessage = $('success-message');
+
+            sendButton.addEventListener('click', async () => {
+                
+                const username = $('account-username').value;
+                const firstName = $('account-first-name').value;
+                const lastName = $('account-last-name').value;
+                const email = $('account-email').value;
+                const nickname = $('account-nickname').value;
+                const password = $('account-password').value;
+
+                const response = await fetch('/api/create-account/', {
+                    method: 'POST',
+                    body: JSON.stringify({
+                        username,
+                        'first-name': firstName,
+                        'last-name': lastName,
+                        email,
+                        nickname,
+                        password,
+                    }),
+                    headers: {
+                       'Content-Type': 'application/json',
+                       'X-CSRFToken': getCookie('csrftoken'),
+                    },
+                });
+                let status_code = response.status;
+                let message = '';
+                try {
+                    const data = await response.json();
+                    message = data.details;
+                } catch (e) {
+                    status_code = status_code === 200 ? 500: status_code;
+                    message =`Internal server error`;
+                }
+                if (status_code === 200) {
+                    successMessage.style.display = 'block';
+                    errorMessage.style.display = 'none';
+                    successMessage.innerText = message;
+                } else {
+                    errorMessage.style.display = 'block';
+                    successMessage.style.display = 'none';
+                    errorMessage.innerText = message;
+                }
+
+            });
+        }
+        window.addEventListener('load', main);
+    </script>
+</head>
+<body>
+<div id="account-details">
+    <div><span>Username: </span><input id="account-username"/></div>
+    <div><span>First Name: </span><input id="account-first-name"/></div>
+    <div><span>Last name: </span><input id="account-last-name"/></div>
+    <div><span>Email: </span><input id="account-email"/></div>
+    <div><span>Nickname: </span><input id="account-nickname"/></div>
+    <div><span>Password: </span><input id="account-password"/></div>
+</div>
+<button id="send-button">Send</button>
+<div id="error-message"></div>
+<div id="success-message"></div>
+</body>
+</html>

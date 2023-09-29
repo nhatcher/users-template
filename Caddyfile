@@ -1,0 +1,11 @@
+:2080
+
+# django API
+reverse_proxy /api/* localhost:8000
+
+# admin API
+reverse_proxy /admin/* localhost:8000
+reverse_proxy /static/admin/* localhost:8000
+
+# everything else is the frontend 
+reverse_proxy :5173
