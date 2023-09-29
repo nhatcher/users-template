@@ -157,7 +157,8 @@ root@remote# useradd --system --gid django --create-home --home-dir /var/lib/dja
 Install Postgres
 
 ```
-$ apt install libpq-dev postgresql postgresql-contrib
+# apt install libpq-dev postgresql postgresql-contrib
+# apt install build-essential python3-dev
 ```
 
 Log into an interactive Postgres session by typing:
