@@ -152,5 +152,32 @@ root@remote# groupadd --system django
 root@remote# useradd --system --gid django --create-home --home-dir /var/lib/django --shell /usr/sbin/nologin --comment "Django app runner" django
 ```
 
+## Setup the Postgres database
+
+Install Postgres
+
+```
+$ apt install libpq-dev postgresql postgresql-contrib
+```
+
+Log into an interactive Postgres session by typing:
+
+```
+# su postgres
+$ psql
+```
+
+Create a database in the Postgres prompt. Words in angle brackets ("<>" symbols) are placeholders that you should replace with actual values. For example, "<users>" could become "jsmith":
+
+```
+postgres=# CREATE DATABASE <database-name>;
+postgres=# CREATE USER <user> WITH PASSWORD '<password>';
+postgres=# ALTER ROLE <user> SET client_encoding TO 'utf8';
+postgres=# ALTER ROLE <user> SET default_transaction_isolation TO 'read committed';
+postgres=# ALTER ROLE <user> SET timezone TO 'UTC';
+postgres=# GRANT ALL PRIVILEGES ON DATABASE <database-name> TO <user>;
+
+```
+
 
 
