@@ -1,11 +1,14 @@
+from pathlib import Path
+
 from .common import *  # noqa
-from .common import BASE_DIR
 
 DEBUG = True
 
-# Database
-# https://docs.djangoproject.com/en/4.2/ref/settings/#databases
+# BASE_DIR is where manage.py lives
+BASE_DIR = Path(__file__).resolve().parent.parent.parent
 
+# We use a sqlite3 database during development
+# https://docs.djangoproject.com/en/4.2/ref/settings/#databases
 DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.sqlite3",
@@ -15,11 +18,14 @@ DATABASES = {
 
 APP_URL = "http://localhost:2080/"
 
-
+# This is a crucial security setting used for various purposes, including generating CSRF tokens,
+# session management, and more. During development any value will work fine.
 SECRET_KEY = "It doesn't really matter"
 
+# emails are never sent during development, you will find  the content in your terminal
 EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
 
+# We log everything to the terminal
 LOGGING = {
     "version": 1,
     "disable_existing_loggers": False,
@@ -43,11 +49,4 @@ LOGGING = {
         "handlers": ["console"],
         "level": "DEBUG",
     },
-    # "loggers": {
-    #     "django": {
-    #         "handlers": ["console"],
-    #         "level": "DEBUG",#os.getenv("DJANGO_LOG_LEVEL", "INFO"),
-    #         "propagate": False,
-    #     },
-    # },
 }
