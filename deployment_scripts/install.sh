@@ -37,6 +37,14 @@ useradd --system --gid caddy --create-home --home-dir /var/lib/caddy --shell /us
 groupadd --system django
 useradd --system --gid django --create-home --home-dir /var/lib/django --shell /usr/sbin/nologin --comment "Django app runner" django
 
+
+# Install Postgres and dependencies
+apt install libpq-dev postgresql postgresql-contrib
+apt install build-essential python3-dev
+
+# Configure the database
+
+
 # copy service files
 cp caddy.service /etc/systemd/system/caddy.service
 cp gunicorn.service /etc/systemd/system/gunicorn.service

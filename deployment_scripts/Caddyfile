@@ -1,5 +1,14 @@
 # /etc/caddy/Caddyfile
+
 <HOST> {
+    redir https://www.<HOST>{uri}
+}
+
+app.<HOST> {
+        log {
+                output file /var/log/caddy/access.log
+        }
+
         root * /var/www/<NAME>/
 
         # django API
@@ -9,9 +18,5 @@
         reverse_proxy /admin/* localhost:8000
 
         file_server
-}
-
-log {
-	output file /var/log/access.log
 }
 
