@@ -1,4 +1,4 @@
-# A CTO on a shoestring: How to setup a minimal app with almost no money
+# A CTO on a shoestring. <br><span style="font-size:14px">How to setup a minimal app with almost no money</span>
 
 All the code in this blog post is in [github](https://github.com/nhatcher/users-template).
 
@@ -7,6 +7,7 @@ All the code in this blog post is in [github](https://github.com/nhatcher/users-
 ## Getting a domain name (~10€ a year)
 
 You can buy a domain name from places like [namecheap](https://www.namecheap.com/), but there are many other vendors. Just make sure that they only sell you the domain name and nothing else. It should cost you around 10€ a year.
+
 ## Getting an email account
 
 There are several paid vendor like Google. But we will use [Zoho](https://www.zoho.com/mail/zohomail-pricing.html) that for now is free.
@@ -238,7 +239,7 @@ app.example.com {
 	file_server
 }
 ```
-This is redirecting all traffic from 'example.com' to 'www.example.com'. Anything coming from 'www.example.com' is being served from the directory `/var/www/website/` and 'app.example.com' is being served from `/var/www/app/`. As simple as that.
+This is redirecting all traffic from 'example.com' to 'www.example.com'. Anything coming from 'www.example.com' is being served from the directory `/var/www/website/` and 'app.example.com' is being served from `/var/www/app/`. As simple as that. In this case both subdomains are served from the same VPS, but that doesn't need to be the case. <https://www.example.com> could be served form a different machine, maybe done in wordpress or in modern days in webflow or anything else. You could use a static site generator like [Hugo](https://gohugo.io/) or [Zola](https://www.getzola.org/) or build it yourself if you are brave and host it in GitHub or [Neocities](https://neocities.org/) 
 
 Finally run caddy:
 ```
@@ -286,11 +287,13 @@ root@remote# systemctl start caddy.service
 
 Now you are running caddy as a service and can shut down your laptop and go for pizza or beer because you had your first deployment. Your system is up and running!
 
-## Architecture
+One final note. In this post we are only interested in the 'app.example.com' part. But for us it will be a bit more complicated because we will not be just serving plain static html files. We will need Caddy to work as a proxy server. We will fix that issue in the coming sections.
+
+## Local development and architecture
 
 During development we will have three servers running. A proxy server will route all frontend requests to the frontend server and all api calls to the application server. This is very useful because then we will support HMR (Hot Module Reloading).
 
-It works in the following way. A remote machine (a browser) will make requests to our server sitting in <https://www.example.com> for example. There are two kinds of requests:
+It works in the following way. A remote machine (a browser) will make requests to our server sitting in <https://app.example.com> for example. There are two kinds of requests:
 
 1. Static content like JavaScript files, HTML, CSS, images that are public
 2. API calls that will need to be processed by the server
@@ -301,8 +304,7 @@ You can host them for free on GitHub or [Neocities](https://neocities.org/) or m
 The second kind of requests need a server, a program, to process some data and send some other data back. For instance a search engine will need to send a lits of URLs that contain some information. Many of those API calls are public, meaning everybody can use the service. Some might be private and only accessible if a user has logged in into the system
 
 
-
-## The app design
+## The app design and the wrireframes
 
 Our web application will be as simple as possible. Users can:
 
@@ -313,8 +315,7 @@ Our web application will be as simple as possible. Users can:
 
 Just the bare minimum that a world changing app needs to have. The frontend will be all done in HTML, modern JavaScript and CSS. No frills.
 
-## The wireframes
-
+![example app wireframes](images/ExampleApp.svg "Wireframe for a simple App")
 ## The database design
 
 Tables in the database.
