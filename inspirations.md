@@ -15,6 +15,7 @@ https://github.com/vitorfs/bootcamp
 
 https://sentry.io/welcome/
 https://newrelic.com/
+https://www.loggly.com/
 
 # Notifications
 

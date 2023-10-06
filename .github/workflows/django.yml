@@ -27,8 +27,4 @@ jobs:
         pip install -r requirements.txt
     - name: Run Tests
       run: |
-        pyright
-        black . --check
-        flake8 server/
-        isort server/ --check
-        pytest --cov-report term-missing --cov server
+        bash run_tests.sh
