@@ -1,7 +1,19 @@
-# A CTO on a shoestring. <br><span style="font-size:14px">How to setup a minimal app with almost no money</span>
+# A CTO playbook on a shoestring.
 
-All the code in this blog post is in [github](https://github.com/nhatcher/users-template).
+All the code in this blog post is in [github](https://github.com/nhatcher/users-template) and you should have a look at that first and come here only for further assistance.
 
+In this blog post you are going to learn how to setup and deploy a simple web application with modern best programming practices and all the bells and whistles you need to grow the app from zero to a few hundred users.
+There might be some things you want to do differently from code in here. You might want to use a different platform to read your logs, you might want to use nginx instead of caddy, you might want to run your django code with Daphne instead of gunicorn, you might decide GitHub is not good for you, or use a different email provider or host provider or get the domain name from a different name registrar. All good you will still be able to use this with minimal modifications. Changing Django and python for a different framework or programming language will require more changes but the core of this post will still be useful. Using [Lavarel](https://laravel.com/), [Ruby on Rails](https://rubyonrails.org/) or plain [go](https://go.dev/) should pose no big challenges to the reader.
+
+This should not only be regarded as a tutorial on how to setup and install everything but as a guide on how to build a modern web application.
+
+The guide is intended for a small team, maybe just one single person. If your team is larger than 5 people this guide might still work but might fall short in some respects. I am assuming you have almost no cash to dedicate to this project, we are going to do this on a shoestring. With all this in place if you make the project grow from a solo developer and no users to a few hundred users and 5 developer you will very easily upgrade the tools and hardware. I am assuming also you have some background in programming and you are comfortable in a Linux terminal. If you are not you really need a more technical partner that will help you with that. You will also not learn Django or python here although you should be ok if you know just some python and are willing to dedicate some time go go through the Django documentation.
+
+Lastly we will not be setting the frontend here. All we are going to do here is completely frontend agnostic. You could do the whole frontend in vanilla HTML, CSS and JavaScript or use any modern framework like React and TypeScript.
+
+After having setup toy webapps following similar patterns as we will be following here the idea of this project came when I join forces with Lu Bertolucci to work on his project 'feirou'. As I had some available time in my hand I thought this was a good moment to do this right.\
+
+Many of the things that I will recommend here I learn from my coworkers during the past 14 years! I also have them to thank.
 
 A brief note on nomenclature. I will assume that your username is 'jsmith', that your local's name computer is 'local', your remote name computer is 'remote', the name of the domain you bought is 'example.com' and that the ip in your VPS is '93.184.216.34'.
 If you are following in Linux or Mac you will have no issues. If you are following in a windows machine and are working in the WSL it should be pretty straightforward. Otherwise you might need to tweak some commands for your own environment and OS. When you see a command like:
@@ -11,13 +23,17 @@ root@remote# apt install failban
 ```
 means that you are running this command as root in the remote machine. And the remote folder is not important. Note that you know that it is a root user because the prompt ends with '#' and not with '$'. With this provisions I hope it is clear where are you running what command.
 
+Finally, I will check links and versions. I will try not to link to third party blogs but prefer tools documentation. That said, links might be broken. I will always try to provide information about the link so you can search the internet easily.
+
 ## Getting a domain name (~10€ a year)
 
-You can buy a domain name from places like [namecheap](https://www.namecheap.com/), but there are many other vendors. Just make sure that they only sell you the domain name and nothing else. It should cost you around 10€ a year.
+You can buy a domain name from places like [namecheap](https://www.namecheap.com/), but there are many other vendors. Just make sure that they only sell you the domain name and nothing else. It should cost you around 10€ a year. But you can find really cheap domain names for a year you can get for your testing. Beware of not renewing them, those cost go up and add!
 
 ## Getting an email account
 
-There are several paid vendor like Google. But we will use [Zoho](https://www.zoho.com/mail/zohomail-pricing.html) that for now is free.
+There are several paid vendors like Google. But we will use [Zoho](https://www.zoho.com/mail/zohomail-pricing.html) that for now is free. Scroll down to the "forever free plan". You can use one provider now and move to a different one in the future. Because you own the domain name you will not need to change email addresses. The only problem you might have to deal with is exporting from Zoho and importing them again in the new platform if you ever want to do that.
+
+Zoho has a nice web service and apps for Android and iOS to read and send your email from the phone.
 
 To setup your email, you will need to follow the steps in one of these guides, [namecheap](https://www.namecheap.com/support/knowledgebase/article.aspx/9758/2208/how-to-set-up-zoho-email-for-my-domain/) or [zoho](https://www.zoho.com/mail/help/adminconsole/namecheap.html).
 
@@ -65,7 +81,7 @@ if __name__ == "__main__":
     send_email(to_address)
 ```
 
-## Server provision (~5€ a month)
+## Server provision and setup (~5€ a month)
 
 This is by far the most complicated bit. But you only have to do it once.
 
@@ -150,13 +166,13 @@ Your cloud provider might also feature some firewall settings. I don't think tha
 
 2. Point your domain name to your remote computer
 
-We want your ip to point to your computer, this will buy us two things:
+We want your ip to point to your remote computer, this will buy us two things:
 
 * We will be able to do `ssh jsmith@example.com` instead of using the ip
 * Your friends will be able to visit `www.example.com` and land to your webpage!
 
 We do this by configuring the DNS records in your DNS host provider. This is not difficult, but I bet you will have some stories to tell if you spend enough time configuring those.
-Normally your domain registar will provide you with a full featured GUI to config those DNS records in the _zone file_.
+Normally your domain registrar will provide you with a full featured GUI to config those DNS records in the _zone file_.
 
 The only thing you have to do is to add a couple of `A Record`'s in your advanced DNS settings. If you are using Namecheap will look something like:
 ![namecheap config](images/namecheap_config.png "Configuring DNS records")
@@ -295,6 +311,44 @@ root@remote# systemctl start caddy.service
 Now you are running caddy as a service and can shut down your laptop and go for pizza or beer because you had your first deployment. Your system is up and running!
 
 One final note. In this post we are only interested in the 'app.example.com' part. But for us it will be a bit more complicated because we will not be just serving plain static html files. We will need Caddy to work as a proxy server. We will fix that issue in the coming sections.
+
+4. Setup the Postgres database
+
+In your production machine install Postgres and dependencies:
+
+```
+# apt install libpq-dev postgresql postgresql-contrib
+# apt install build-essential python3-dev
+```
+
+Log into an interactive Postgres session by typing:
+
+```
+# su postgres
+$ psql
+```
+
+Create a database in the Postgres prompt. Words in angle brackets ("<>" symbols) are placeholders that you should replace with actual values. For example, "\<database-user\>" could become "jsmith":
+
+```
+postgres=# CREATE DATABASE <database-name>;
+postgres=# CREATE USER <database-user> WITH PASSWORD '<database-password>';
+postgres=# ALTER ROLE <database-user> SET client_encoding TO 'utf8';
+postgres=# ALTER ROLE <database-user> SET default_transaction_isolation TO 'read committed';
+postgres=# ALTER ROLE <database-user> SET timezone TO 'UTC';
+postgres=# GRANT ALL PRIVILEGES ON DATABASE <database-name> TO <database-user>;
+```
+Here we just follow the recommendations in the [Django documentation](https://docs.djangoproject.com/en/4.2/ref/databases/#postgresql-notes)
+
+You can, of course use a different database like MariaDB, MySQL, Oracle, CockroachDB, Firebird, Microsoft SQL Server  or even MongoDB. We will be using SQLite in local development. Please have a good reason if you don't want to use PostgreSQL.
+
+5. Create an underprivileged django user:
+This is the user that will run the 
+```
+root@remote# groupadd --system django
+root@remote# useradd --system --gid django --create-home --home-dir /var/lib/django --shell /usr/sbin/nologin --comment "Django app runner" django
+```
+
 
 ## Local development and architecture
 
@@ -552,42 +606,6 @@ Some logs may be updated to alerts or notifications depending on their importanc
 
 Stats are numbers of certain occurrences that we feel are important. Like number of accounts created or the number of times people logged in into the system.
 
-
-## Remote computer setup and deployment
-
-Create a django user:
-```
-root@remote# groupadd --system django
-root@remote# useradd --system --gid django --create-home --home-dir /var/lib/django --shell /usr/sbin/nologin --comment "Django app runner" django
-```
-
-## Setup the Postgres database
-
-In your production machine install Postgres and dependencies
-
-```
-# apt install libpq-dev postgresql postgresql-contrib
-# apt install build-essential python3-dev
-```
-
-Log into an interactive Postgres session by typing:
-
-```
-# su postgres
-$ psql
-```
-
-Create a database in the Postgres prompt. Words in angle brackets ("<>" symbols) are placeholders that you should replace with actual values. For example, "<users>" could become "jsmith":
-
-```
-postgres=# CREATE DATABASE <database-name>;
-postgres=# CREATE USER <user> WITH PASSWORD '<password>';
-postgres=# ALTER ROLE <user> SET client_encoding TO 'utf8';
-postgres=# ALTER ROLE <user> SET default_transaction_isolation TO 'read committed';
-postgres=# ALTER ROLE <user> SET timezone TO 'UTC';
-postgres=# GRANT ALL PRIVILEGES ON DATABASE <database-name> TO <user>;
-
-```
 
 ## Refinements:
 
