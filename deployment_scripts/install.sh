@@ -43,7 +43,10 @@ apt install libpq-dev postgresql postgresql-contrib
 apt install build-essential python3-dev
 
 # Configure the database
-
+python substitute_env_vars.py db_init.template.sql > db_init.sql
+su postgres
+psql -f db_init.sql
+exit
 
 # copy service files
 cp caddy.service /etc/systemd/system/caddy.service
@@ -51,7 +54,7 @@ cp gunicorn.service /etc/systemd/system/gunicorn.service
 
 # copy Caddyfile
 mkdir /etc/caddy/
-python substitute_env_vasr.py Caddyfile > /etc/caddy/Caddyfile
+python substitute_env_vars.py Caddyfile > /etc/caddy/Caddyfile
 
 systemctl daemon-reload
 

@@ -11,6 +11,7 @@ from django.core.exceptions import ValidationError
 from django.core.validators import validate_email
 from django.http import HttpRequest, JsonResponse
 from django.utils import timezone
+from django.utils.translation import gettext as _
 from django.views.decorators.csrf import csrf_exempt, ensure_csrf_cookie
 from django.views.decorators.http import require_POST
 
@@ -68,7 +69,7 @@ def update_password(request: HttpRequest) -> JsonResponse:
 
     recover_password.delete()
 
-    return JsonResponse({"details": "Password successfully updated."})
+    return JsonResponse({"details": _("Password successfully updated.")})
 
 
 @require_POST
@@ -83,7 +84,7 @@ def recover_password(request: HttpRequest) -> JsonResponse:
         user = User.objects.get(email=email_address)
     except Exception:
         return JsonResponse(
-            {"details": "Could not find a user to activate"}, status=400
+            {"details": _("Could not find a user to activate")}, status=400
         )
     username: str = user.username
 
@@ -103,7 +104,7 @@ def recover_password(request: HttpRequest) -> JsonResponse:
 
     email.send_update_password_email(email_address, username, email_token)
 
-    return JsonResponse({"detail": "Email sent."})
+    return JsonResponse({"details": _("Email sent.")})
 
 
 def activate_account(request: HttpRequest, email_token: str) -> JsonResponse:
@@ -113,7 +114,7 @@ def activate_account(request: HttpRequest, email_token: str) -> JsonResponse:
     except Exception:
         logger.warning("Could not find a user to activate")
         return JsonResponse(
-            {"details": "Could not find a user to activate"}, status=400
+            {"details": _("Could not find a user to activate")}, status=400
         )
 
     user = pending_user.user_profile.user
@@ -123,7 +124,7 @@ def activate_account(request: HttpRequest, email_token: str) -> JsonResponse:
     pending_user.delete()
 
     logger.info("User activated and pending user deleted!")
-    return JsonResponse({"details": "Account successfully activated."})
+    return JsonResponse({"details": _("Account successfully activated.")})
 
 
 @require_POST
@@ -141,7 +142,7 @@ def create_account(request: HttpRequest) -> JsonResponse:
         validate_email(email_address)
         validate_password(password)
     except Exception as e:
-        logger.warning(f"We found a problem to validate your password: {str(e)}")
+        logger.warning(f"We found a problem validating your password: {str(e)}")
         return JsonResponse({"details": str(e)}, status=400)
 
     # create user and set as inactive
@@ -172,7 +173,7 @@ def create_account(request: HttpRequest) -> JsonResponse:
     email.send_confirmation_email(email_address, username, email_token)
 
     logger.info("Confirmation email sent")
-    return JsonResponse({"detail": "Successfully user created."})
+    return JsonResponse({"details": _("Successfully user created.")})
 
 
 @require_POST
@@ -187,19 +188,19 @@ def login_view(request: HttpRequest) -> JsonResponse:
     if username is None or password is None:
         logger.warning("Incomplete credentials")
         return JsonResponse(
-            {"details": "Please provide username and password."}, status=400
+            {"details": _("Please provide username and password.")}, status=400
         )
 
     user = authenticate(username=username, password=password)
 
     if user is None:
         logger.warning("Invalid credentials")
-        return JsonResponse({"details": "Invalid credentials."}, status=400)
+        return JsonResponse({"details": _("Invalid credentials.")}, status=400)
 
     login(request, user)
     logger.info("Successfully logged in")
 
-    return JsonResponse({"details": "Successfully logged in."})
+    return JsonResponse({"details": _("Successfully logged in.")})
 
 
 @require_POST
@@ -211,7 +212,7 @@ def logout_view(request: HttpRequest) -> JsonResponse:
     logout(request)
 
     logger.info("Logged out")
-    return JsonResponse({"detail": "Successfully logged out."})
+    return JsonResponse({"details": "Successfully logged out."})
 
 
 @ensure_csrf_cookie

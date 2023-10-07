@@ -50,7 +50,7 @@
                 let message = '';
                 try {
                     const data = await response.json();
-                    message = data.details;
+                    message = `Account created, please check your email. ${data.details}`;
                 } catch (e) {
                     status_code = status_code === 200 ? 500: status_code;
                     message =`Internal server error`;

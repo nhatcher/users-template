@@ -1,48 +1,57 @@
 from django.conf import settings
 from django.core.mail import send_mail
+from django.utils.translation import gettext as _
 
 
 def send_confirmation_email(recipient: str, username: str, email_token: str):
     """Sends confirmation email"""
     app_url = settings.APP_URL
 
-    message = f"""
-    Olá {username}, o Feirou.org precisa validar o seu email.
+    message = (
+        _(
+            """
+    Hello %(username)s, we need to confirm your email.
 
-    Por favor, clique no link abaixo.
+    Please click in the link bellow:
 
-    {app_url}api/activate-account/{email_token}
+    %(app_url)sapi/activate-account/%(email_token)s
 
-    Se você não se cadastrou em nossa plataforma, você pode ignorar este email com segurança.
+    If you have not asked for an account in this platform you can ignore this message.
 
-    Saudações,
-    Equipe Feirou.org
-
+    Greetings,
+    %(app_url)s
     """
+        )
+        % {"username": username, "app_url": app_url, "email_token": email_token}
+    )
 
-    subject = "Confirme o seu email"
+    subject = _("Confirm your email")
 
-    send_mail(subject, message, None, [recipient])
+    send_mail(subject, _(message), None, [recipient])
 
 
 def send_update_password_email(recipient: str, username: str, email_token):
     """Sends update password link"""
     app_url = settings.APP_URL
 
-    message = f"""
-    Olá {username}, o Feirou.org precisa validar o seu email.
+    message = (
+        _(
+            """
+    Hi %(username)s, you have requested to reset your password.
 
-    Por favor, clique no link abaixo.
+    Please click in the link bellow:
 
-    {app_url}update_password.html#id={email_token}
+    %(app_url)supdate_password.html#id=%(email_token)s
 
-    Se você não se cadastrou em nossa plataforma, você pode ignorar este email com segurança.
+    If you have not asked for an account in this platform you can ignore this message.
 
-    Saudações,
-    Equipe Feirou.org
-
+    Greetings,
+    %(app_url)s
     """
+        )
+        % {"username": username, "app_url": app_url, "email_token": email_token}
+    )
 
-    subject = "Update password"
+    subject = _("Update password")
 
     send_mail(subject, message, None, [recipient])
