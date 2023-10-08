@@ -26,7 +26,6 @@ wget https://github.com/caddyserver/caddy/releases/download/v2.7.4/caddy_2.7.4_l
 tar -xf caddy_2.7.4_linux_amd64.tar.gz
 mkdir /opt/caddy/
 cp caddy /opt/caddy/
-# echo PATH=$PATH:/opt/caddy/ >> /etc/profile
 cd ..
 rm -r downloads/
 
@@ -43,23 +42,27 @@ apt install libpq-dev postgresql postgresql-contrib
 apt install build-essential python3-dev
 
 # Configure the database
-python substitute_env_vars.py db_init.template.sql > db_init.sql
+python montyplate.py db_init.template.sql > db_init.sql
 su postgres
 psql -f db_init.sql
 exit
 
 # copy service files
 cp caddy.service /etc/systemd/system/caddy.service
-cp gunicorn.service /etc/systemd/system/gunicorn.service
+python montyplate.py gunicorn.template.service > /etc/systemd/system/gunicorn.service
 
 # copy Caddyfile
 mkdir /etc/caddy/
-python substitute_env_vars.py Caddyfile > /etc/caddy/Caddyfile
+python montyplate.py Caddyfile.template > /etc/caddy/Caddyfile
+
+# copy deploy script
+python montyplate.py deploy.template.sh > /bin/deploy.sh
+chown +x /bin/deploy.sh
 
 systemctl daemon-reload
 
 # start the caddy server
-systemctl start gunicorn.service
+systemctl start caddy.service
 
 # copy deploy script
 cp deploy.sh /bin/deploy.sh

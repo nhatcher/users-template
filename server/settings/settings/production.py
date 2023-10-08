@@ -1,15 +1,45 @@
-import environ
 import sentry_sdk
+import configparser
 
 from .common import *  # noqa
 
-env = environ.Env()
+# Take secrets and settings from the config file
+config = configparser.ConfigParser(interpolation=None)
+config.read("/etc/server_config.ini")
 
-# Take environment variables from .env file
-environ.Env.read_env("/etc/django.env")
+DEBUG = False
+
+# Quick-start development settings - unsuitable for production
+# See https://docs.djangoproject.com/en/4.2/howto/deployment/checklist/
+ALLOWED_HOSTS = [config["django"]["host"]]
+
+APP_URL = config["django"]["app_url"]
+STATIC_ROOT = config["django"]["static_root"]
+SECRET_KEY = config["django"]["database"]
+
+# Database
+# https://docs.djangoproject.com/en/4.2/ref/settings/#databases
+DATABASES = {
+    "default": {
+        "ENGINE": "django.db.backends.postgresql",
+        "NAME": config["database"]["name"],
+        "USER": config["database"]["user"],
+        "PASSWORD": config["database"]["password"],
+        "HOST": "127.0.0.1",
+        "PORT": "",
+    }
+}
+
+EMAIL_HOST = config["email"]["host"]
+EMAIL_PORT = 465
+EMAIL_USE_SSL = True
+EMAIL_HOST_USER = config["email"]["host_user"]
+DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
+EMAIL_HOST_PASSWORD = config["email"]["host_password"]
+
 
 sentry_sdk.init(
-    dsn=env("SENTRY_DNS"),
+    dsn=config["sentry"]["dns"],
     # Set traces_sample_rate to 1.0 to capture 100%
     # of transactions for performance monitoring.
     traces_sample_rate=1.0,
@@ -18,37 +48,6 @@ sentry_sdk.init(
     # We recommend adjusting this value in production.
     profiles_sample_rate=1.0,
 )
-
-DEBUG = False
-
-# Quick-start development settings - unsuitable for production
-# See https://docs.djangoproject.com/en/4.2/howto/deployment/checklist/
-ALLOWED_HOSTS = [env("HOST")]
-
-APP_URL = env("APP_URL")
-STATIC_ROOT = env("STATIC_ROOT")
-
-# Database
-# https://docs.djangoproject.com/en/4.2/ref/settings/#databases
-DATABASES = {
-    "default": {
-        "ENGINE": "django.db.backends.postgresql",
-        "NAME": env("DATABASE_NAME"),
-        "USER": env("DATABASE_USER"),
-        "PASSWORD": env("DATABASE_PASSWORD"),
-        "HOST": "127.0.0.1",
-        "PORT": "",
-    }
-}
-
-SECRET_KEY = env("SECRET_KEY")
-
-EMAIL_HOST = env("EMAIL_HOST")
-EMAIL_PORT = 465
-EMAIL_USE_SSL = True
-EMAIL_HOST_USER = env("EMAIL_HOST_USER")
-DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
-EMAIL_HOST_PASSWORD = env("EMAIL_HOST_PASSWORD")
 
 LOGGING = {
     "version": 1,

@@ -619,6 +619,7 @@ Stats are numbers of certain occurrences that we feel are important. Like number
 4. Staging server(s)
 You might want to have a staging server in <https://staging.example.com>. If you want to be safer you can do it using random subdomains: <https://sleigh_year.g.example.com>. You can copy the data from production. Droplets are cheap for a few hours or days.
 
+5. Creating mock data
 
 ## Extra A: A VPN with Wireguard
 

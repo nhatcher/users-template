@@ -2,20 +2,25 @@
 # makes sure the program ends if any of the comands produces an error
 set -e
 
+REPOSITORY_URL=<github.url>
+REPOSITORY_NAME=<github.name>
+
 # stop the service
 systemctl stop gunicorn.service
 
-# remove folder
-rm -r /var/lib/django/users-template
+# remove old directory if exists
+rm -rf "/var/lib/django/$REPOSITORY_NAME"
 
 # Set django shell to bash
 chsh django -s /bin/bash
 
 # change to django
 sudo -i -u django /bin/bash << EOF
+set -e
 cd /var/lib/django/
-git clone https://github.com/nhatcher/users-template.git
-cd users-template
+git clone $REPOSITORY_URL  
+cd $REPOSITORY_NAME
+git log -n 1 --format="%H" > ../deployed_commit_id.txt
 python -m venv venv
 source venv/bin/activate
 pip install -r production_requirements.txt
@@ -29,13 +34,13 @@ EOF
 chsh django -s /usr/sbin/nologin
 
 # copy files for the front end
-rm -rf /var/www/users-template/
-mkdir /var/www/users-template/
-cp -r /var/lib/django/users-template/frontend_test/* /var/www/users-template/
+rm -rf /var/www/$REPOSITORY_NAME/
+mkdir /var/www/$REPOSITORY_NAME/
+cp -r /var/lib/django/$REPOSITORY_NAME/frontend_test/* /var/www/$REPOSITORY_NAME/
 
 # copy files for the admin pannel
-mkdir /var/www/users-template/static/
-cp -r /var/lib/django/static/* /var/www/users-template/static/
+mkdir /var/www/$REPOSITORY_NAME/static/
+cp -r /var/lib/django/static/* /var/www/$REPOSITORY_NAME/static/
 
 # make sure all is own by caddy user
 chown caddy:caddy /var/www/ -R
