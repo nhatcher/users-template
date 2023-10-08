@@ -9,9 +9,13 @@ This should not only be regarded as a tutorial on how to setup and install every
 
 The guide is intended for a small team, maybe just one single person. If your team is larger than 5 people this guide might still work but might fall short in some respects. I am assuming you have almost no cash to dedicate to this project, we are going to do this on a shoestring. With all this in place if you make the project grow from a solo developer and no users to a few hundred users and 5 developer you will very easily upgrade the tools and hardware. I am assuming also you have some background in programming and you are comfortable in a Linux terminal. If you are not you really need a more technical partner that will help you with that. You will also not learn Django or python here although you should be ok if you know just some python and are willing to dedicate some time go go through the Django documentation.
 
+Although I am guiding you through the cheapest possible option, as soon as you start getting costumers you should consider investing in infrastructure. Maybe you will need a separate database server o a more performant server or paying for some of the services you are using.
+
+This is not the only way to setup a server. There are tons of other ways of doing this. Some might want to use [Heroku](https://www.heroku.com/) or [Fly.io](https://fly.io/) or a completely managed [Cloudron](https://www.cloudron.io/). There are of course the big enterprise solutions like [Google Cloud](https://cloud.google.com/), [AWS](https://aws.amazon.com/) or [Microsoft Azure](https://azure.microsoft.com/)
+
 Lastly we will not be setting the frontend here. All we are going to do here is completely frontend agnostic. You could do the whole frontend in vanilla HTML, CSS and JavaScript or use any modern framework like React and TypeScript.
 
-After having setup toy webapps following similar patterns as we will be following here the idea of this project came when I join forces with Lu Bertolucci to work on his project 'feirou'. As I had some available time in my hand I thought this was a good moment to do this right.\
+After having setup toy webapps following similar patterns as we will be following here the idea of this project came when I join forces with Lu Bertolucci to work on his project 'feirou'. As I had some available time in my hand I thought this was a good moment to do this right.
 
 Many of the things that I will recommend here I learn from my coworkers during the past 14 years! I also have them to thank.
 
@@ -90,7 +94,7 @@ Before even getting a VPS you need a pair of ssh keys. You probably have already
 Your cloud provider will probably let you [upload your public key](https://docs.digitalocean.com/products/droplets/how-to/add-ssh-keys/to-team/) so that every new VPS will have the ssh key installed.
 
 I am using an instance in [DigitalOcean](https://www.digitalocean.com/) basic droplets that at the time of writing are advertised as 4$/month but because of billing issues turns out to be around 4.5€ a month. This is enough for our purposes.
-Other options are [Scaleway](https://www.scaleway.com/en/), [Linode](https://www.linode.com/), [Hetzner](https://www.hetzner.com/), and many others.
+Other options are [Scaleway](https://www.scaleway.com/en/), [Linode](https://www.linode.com/), [Hetzner](https://www.hetzner.com/), and many others. Most notably [Oracle Cloud]() offers a forever free tier!
 
 1. Secure the server
 
@@ -620,6 +624,13 @@ Stats are numbers of certain occurrences that we feel are important. Like number
 You might want to have a staging server in <https://staging.example.com>. If you want to be safer you can do it using random subdomains: <https://sleigh_year.g.example.com>. You can copy the data from production. Droplets are cheap for a few hours or days.
 
 5. Creating mock data
+
+When testing the app it is very useful to have the app filled mock data. For that we have a script that fills the database and returns a file with users and passwords.
+
+
+6. What a second, what is deployed again?
+
+Having a visible deployed commit id will save you from trouble.
 
 ## Extra A: A VPN with Wireguard
 

@@ -18,6 +18,7 @@ ufw enable
 
 apt install python3.10-venv
 apt install python-is-python3
+apt install git
 
 # Install caddy
 mkdir downloads

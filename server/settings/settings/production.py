@@ -1,5 +1,6 @@
-import sentry_sdk
 import configparser
+
+import sentry_sdk
 
 from .common import *  # noqa
 
