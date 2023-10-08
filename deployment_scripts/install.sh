@@ -58,12 +58,9 @@ python montyplate.py Caddyfile.template > /etc/caddy/Caddyfile
 
 # copy deploy script
 python montyplate.py deploy.template.sh > /bin/deploy.sh
-chown +x /bin/deploy.sh
+chmod +x /bin/deploy.sh
 
 systemctl daemon-reload
 
 # start the caddy server
 systemctl start caddy.service
-
-# copy deploy script
-cp deploy.sh /bin/deploy.sh

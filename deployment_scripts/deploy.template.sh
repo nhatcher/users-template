@@ -2,8 +2,8 @@
 # makes sure the program ends if any of the comands produces an error
 set -e
 
-REPOSITORY_URL=<github.url>
-REPOSITORY_NAME=<github.name>
+REPOSITORY_URL="<github.url>"
+REPOSITORY_NAME="<github.name>"
 
 # stop the service
 systemctl stop gunicorn.service

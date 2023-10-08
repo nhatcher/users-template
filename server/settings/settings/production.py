@@ -16,7 +16,7 @@ ALLOWED_HOSTS = [config["django"]["host"]]
 
 APP_URL = config["django"]["app_url"]
 STATIC_ROOT = config["django"]["static_root"]
-SECRET_KEY = config["django"]["database"]
+SECRET_KEY = config["django"]["secret_key"]
 
 # Database
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
