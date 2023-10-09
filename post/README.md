@@ -94,7 +94,7 @@ Before even getting a VPS you need a pair of ssh keys. You probably have already
 Your cloud provider will probably let you [upload your public key](https://docs.digitalocean.com/products/droplets/how-to/add-ssh-keys/to-team/) so that every new VPS will have the ssh key installed.
 
 I am using an instance in [DigitalOcean](https://www.digitalocean.com/) basic droplets that at the time of writing are advertised as 4$/month but because of billing issues turns out to be around 4.5€ a month. This is enough for our purposes.
-Other options are [Scaleway](https://www.scaleway.com/en/), [Linode](https://www.linode.com/), [Hetzner](https://www.hetzner.com/), and many others. Most notably [Oracle Cloud]() offers a forever free tier!
+Other options are [Scaleway](https://www.scaleway.com/en/), [Linode](https://www.linode.com/), [Hetzner](https://www.hetzner.com/), and many others. Most notably [Oracle Cloud](https://www.oracle.com/cloud/free/) offers a forever free tier!
 
 1. Secure the server
 
@@ -113,7 +113,11 @@ root@remote# apt install fail2ban
 
 Make sure you can only ssh with a key and not with a password. So `ssh root@93.184.216.34` only works form your computer with the private ssh key.
 
-Install the firewall:
+Note that playing with firewall is a little dangerous, not only you can expose your machine to the rest of the internet if you do something wrong, you can also you lock yourself out if you set the wrong rules. Some vendors give you a direct console access to your VPS and that will mitigate the issue. But if you don't have direct console access tread carefully. So read all the documentation first and apply the rules that are convenient only after understanding what you are doing.
+
+A firewall is a piece if software, or hardware, that acts as security barrier monitoring and controlling incoming and outgoing network traffic based on a set of predefined rules or policies. The Linux kernel has a build in [Netfilter](https://en.wikipedia.org/wiki/Netfilter) framework that we can control in userspace with a command-line utility, 'iptables', that allows you to configure and manage firewall rules and network packet filtering. In layperson terms this means that at the Operative System level we have a way to check all data coming in or going out of your computer.
+
+Raw 'iptables' commands are hard to understand, even for experts and there are other programs designed to generate this rules for you. A good example is the 'fail2ban' command above. In ubuntu system the program 'UFW', (the Uncomplicated FireWall) is widely used. The following will deny all incoming traffic and allow all outgoing, then allow all ssh, http and https. Hopefully it is self explanatory.
 ```
 root@remote# apt install ufw
 root@remote# ufw disable
@@ -123,6 +127,74 @@ root@remote# ufw allow ssh
 root@remote# ufw allow http
 root@remote# ufw allow https
 root@remote# ufw enable
+```
+
+And it that worked 100% of the cases I wouldn't have had to tell you about 'iptables' in the first place. If you are administrating a VPS chances are you will have to see the face of the tiger sooner rather than later.
+
+If you can't use UFW a set of rules that works well for our purposes is:
+```bash
+#!/bin/bash
+
+# Flush existing rules
+iptables -F
+
+# Allow incoming SSH (port 22) traffic
+iptables -A INPUT -p tcp --dport 22 -j ACCEPT
+
+# Allow established connections
+iptables -A INPUT -m conntrack --ctstate RELATED,ESTABLISHED -j ACCEPT
+
+# Allow incoming HTTP (port 80) traffic
+iptables -A INPUT -p tcp --dport 80 -j ACCEPT
+
+# Allow incoming HTTPS (port 443) traffic
+iptables -A INPUT -p tcp --dport 443 -j ACCEPT
+
+# Allow loopback (localhost) traffic
+iptables -A INPUT -i lo -j ACCEPT
+
+# Allow ICMP (ping) traffic
+iptables -A INPUT -p icmp --icmp-type echo-request -j ACCEPT
+
+# Set the default policies to DROP (block all other incoming traffic)
+iptables -P INPUT DROP
+iptables -P FORWARD DROP
+
+# Allow all outgoing traffic
+iptables -P OUTPUT ACCEPT
+```
+You can run the commands one by one or run in in a file `firewall-setting.sh`.
+If you want to make a backup of your current rules before you do your foolishness:
+```
+# iptables-save > ~/iptables-rules
+```
+And to restore them:
+```
+# iptables-restore iptables-rules
+```
+
+You need to know that applying iptables rules are not persisted after boot. So if you do get locked out just reboot your VPS. There are several ways to persist the rules. Creating a system script like we have done for caddy and gunicorn is not a bad way:
+```
+[Unit] 
+Description=runs iptables restore on boot
+ConditionFileIsExecutable=/opt/util/restore-iptables.sh
+After=network.target
+
+[Service]
+Type=forking
+ExecStart=/opt/util/restore-iptables.sh
+start TimeoutSec=0
+RemainAfterExit=yes
+GuessMainPID=no
+
+[Install]
+WantedBy=multi-user.target
+```
+
+And then the `restore-iptables.sh` script would be:
+```
+#!/bin/sh
+/usr/bin/flock /run/.iptables-restore /opt/util/iptables-restore /etc/iptables/rules.v4
 ```
 
 Create a user and add it to the sudoers list. Make sure you can ssh with that user and remove ssh root access to the machine.

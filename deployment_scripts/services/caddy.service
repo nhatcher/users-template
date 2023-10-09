@@ -14,7 +14,7 @@
 # `caddy run` command or use the caddy-api.service file instead.
 
 [Unit]
-Description=Caddy
+Description=Caddy Server Daemon
 Documentation=https://caddyserver.com/docs/
 After=network.target network-online.target
 Requires=network-online.target

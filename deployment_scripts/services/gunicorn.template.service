@@ -1,11 +1,9 @@
 [Unit]
-Description=gunicorn daemon
-# Requires=gunicorn.socket
+Description=Gunicorn Daemon
 After=network.target
 
 [Service]
-Type=notify
-# the specific user that our service will run as
+Type=simple
 User=django
 Group=django
 WorkingDirectory=/var/lib/django/<github.name>/
@@ -19,3 +17,4 @@ TimeoutStopSec=5
 PrivateTmp=true
 
 [Install]
+WantedBy=multi-user.target
