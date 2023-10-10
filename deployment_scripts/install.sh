@@ -83,21 +83,22 @@ apt install -y python-is-python3
 apt install -y git
 
 # Install caddy
+rm -r downloads/
 mkdir downloads
 cd downloads
 wget https://github.com/caddyserver/caddy/releases/download/v2.7.4/$caddy_file
 tar -xf $caddy_file
-mkdir /opt/caddy/
+mkdir -p /opt/caddy/
 cp caddy /opt/caddy/
 cd ..
 rm -r downloads/
 
 # Create system under-priviledged users
-groupadd --system caddy
-useradd --system --gid caddy --create-home --home-dir /var/lib/caddy --shell /usr/sbin/nologin --comment "Caddy web server" caddy
+groupadd --system --force caddy
+useradd --system --gid caddy --create-home --home-dir /var/lib/caddy --shell /usr/sbin/nologin --comment "Caddy web server" caddy || echo "User caddy already exists"
 
-groupadd --system django
-useradd --system --gid django --create-home --home-dir /var/lib/django --shell /usr/sbin/nologin --comment "Django app runner" django
+groupadd --system --force django
+useradd --system --gid django --create-home --home-dir /var/lib/django --shell /usr/sbin/nologin --comment "Django app runner" django  || echo "User django already exists"
 
 
 # Install Postgres and dependencies
@@ -121,11 +122,11 @@ python montyplate.py Caddyfile.template > /etc/caddy/Caddyfile
 mkdir -p /var/www/
 
 # Create django log directory
-mkdir /var/log/django
+mkdir -p /var/log/django
 chown django:django /var/log/django/
 
 # Create caddy log directory
-mkdir /var/log/caddy
+mkdir -p /var/log/caddy
 chown caddy:caddy /var/log/caddy/
 
 # copy deploy script

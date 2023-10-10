@@ -74,11 +74,32 @@ Get the cheapest droplet in DigitalOcean. At the time of writing this is 4$/mont
 Make sure the Authentication method is 'SSH Key' and not 'Password'.
 You should setup the VPS in a way that you can ssh with your username only if ssh keys are correctly setup. Feel free to change the Hostname.
 
-Once the droplet is created make sure the DNS is configured properly and points to your computer. You should be able to `ssh root@example.com`. This usually involves changing DNS settings in you domain registrar provider. Note that it might take some time for the DNS config to propagate. This is a good moment to make yourself some coffee or go for a stroll.
+Once the droplet is created make sure the DNS is configured properly and points to your computer. You should be able to `ssh root@example.com`. This usually involves changing DNS settings in you domain registrar provider. Note that it might take some time for the DNS config to propagate. This is a good moment to make yourself some coffee or go for a stroll. If you are lucky it's just a few minutes.
 
 Don't install anything on your VPS or modify config files.
 
-Create a user in the machine that you will use to mange the machine. Add the user to the sudoers list. Choose a good password.
+Create an `install` directory in the remote machine and copy the contents of everything inside `deployment_scripts/` into that folder:
+
+```
+jsmith@local:~/deployment_scripts$ scp -r * root@example.com:~/install/
+```
+
+Create the file `/etc/server_config.ini` filling each entry carefully.
+
+In the remote computer, as a superuser run:
+```
+root@remote:~/install# ./install.sh
+```
+
+After that just (from any directory):
+```
+# deploy.sh
+```
+
+That's it! your app should be up and running at `https://app.example.com`
+
+
+As a final configuration we should create a user in the machine that you will use to mange the machine. Add the user to the sudoers list. Choose a good password.
 ```
 # adduser jsmith
 # usermod -aG sudo jsmith
@@ -101,25 +122,6 @@ In the remote machine, as root, remove your authorized_keys:
 
 Now `root@example.com` should not work but `jsmith@example.com` should.
 
-Copy the contents of everything inside `deployment_scripts/` to a location in the remote VPS. Usually:
-
-``
-jsmith@local:~/deployment_scripts$ scp -r * jsmith@example.com:~/install/
-``
-
-Create the file `/etc/server_config.ini` filling each entry carefully.
-
-In the remote computer, as a superuser run:
-```
-root@remote:~/install# ./install.sh
-```
-
-After that just (from any directory):
-```
-# deploy.sh
-```
-
-That's it! your app should be up and running at `https://app.example.com`
 
 ## Production logs and troubleshooting
 
