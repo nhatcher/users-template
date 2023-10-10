@@ -91,13 +91,12 @@ In the remote computer, as a superuser run:
 root@remote:~/install# ./install.sh
 ```
 
-After that just (from any directory):
+After that reboot your system. Just (from any directory):
 ```
-# deploy.sh
+# reboot
 ```
 
-That's it! your app should be up and running at `https://app.example.com`
-
+That's it! You are now ready for deployment!
 
 As a final configuration we should create a user in the machine that you will use to mange the machine. Add the user to the sudoers list. Choose a good password.
 ```
@@ -152,6 +151,10 @@ root@remote:~# deploy.sh
 ```
 
 That will pull the latest code, create the virtualevn, install the dependencies, make migrations if needed and copy all the files needed.
+
+
+Your app should be up and running at `https://app.example.com`
+
 
 ## License
 

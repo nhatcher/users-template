@@ -60,7 +60,7 @@ then
     ufw allow ssh
     ufw allow http
     ufw allow https
-    ufw enable
+    ufw --force enable
 else
     # Run the firewall rules
     ./firewall-setup.sh
@@ -78,12 +78,11 @@ else
     systemctl enable iptables-persistent.service
 fi
 
-apt install -y python3-venv
-apt install -y python-is-python3
-apt install -y git
+# install some dependencies
+apt install -y python3-venv python-is-python3 git
 
 # Install caddy
-rm -r downloads/
+rm -rf downloads/
 mkdir downloads
 cd downloads
 wget https://github.com/caddyserver/caddy/releases/download/v2.7.4/$caddy_file
@@ -102,8 +101,7 @@ useradd --system --gid django --create-home --home-dir /var/lib/django --shell /
 
 
 # Install Postgres and dependencies
-apt install -y libpq-dev postgresql postgresql-contrib
-apt install -y build-essential python3-dev
+apt install -y libpq-dev postgresql postgresql-contrib build-essential python3-dev
 
 # Configure the database
 python montyplate.py db_init.template.sql > /var/lib/postgresql/db_init.sql
