@@ -121,6 +121,10 @@ mkdir -p /var/wwww/
 mkdir /var/log/django
 chown django:django /var/log/django/
 
+# Create caddy log directory
+mkdir /var/log/caddy
+chown caddy:caddy /var/log/caddy/
+
 # copy deploy script
 python montyplate.py deploy.template.sh > /bin/deploy.sh
 chmod +x /bin/deploy.sh
