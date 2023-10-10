@@ -40,18 +40,21 @@ while getopts ":h" option; do
     esac
 done
 
+# Set DEBIAN_FRONTEND to noninteractive so it doesn't bug us that much
+export DEBIAN_FRONTEND=noninteractive
+
 
 # update the system
 apt update
-apt upgrade
+apt upgrade -y
 
 # setup fail2ban
-apt install fail2ban
+apt install -y fail2ban
 
 # setup firewall
 if [ "$firewall" == "ufw" ]
 then
-    apt install ufw
+    apt install -y ufw
     ufw default deny incoming
     ufw default allow outgoing
     ufw allow ssh
@@ -75,9 +78,9 @@ else
     systemctl enable iptables-persistent.service
 fi
 
-apt install python3.10-venv
-apt install python-is-python3
-apt install git
+apt install -y python3-venv
+apt install -y python-is-python3
+apt install -y git
 
 # Install caddy
 mkdir downloads
@@ -98,8 +101,8 @@ useradd --system --gid django --create-home --home-dir /var/lib/django --shell /
 
 
 # Install Postgres and dependencies
-apt install libpq-dev postgresql postgresql-contrib
-apt install build-essential python3-dev
+apt install -y libpq-dev postgresql postgresql-contrib
+apt install -y build-essential python3-dev
 
 # Configure the database
 python montyplate.py db_init.template.sql > /var/lib/postgresql/db_init.sql
@@ -115,7 +118,7 @@ mkdir /etc/caddy/
 python montyplate.py Caddyfile.template > /etc/caddy/Caddyfile
 
 # Create www directory if it does not exist
-mkdir -p /var/wwww/
+mkdir -p /var/www/
 
 # Create django log directory
 mkdir /var/log/django
@@ -132,8 +135,8 @@ chmod +x /bin/deploy.sh
 systemctl daemon-reload
 
 # enable the services
-systemctl enable caddy.servive
-systemctl enable gunicorn.service
+systemctl enable caddy
+systemctl enable gunicorn
 
 # start the caddy server
-systemctl start caddy.service
+systemctl start caddy
