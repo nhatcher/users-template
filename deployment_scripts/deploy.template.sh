@@ -18,7 +18,7 @@ rm -rf "/var/lib/django/$REPOSITORY_NAME"
 # 3. activate the environment and install dependencies
 # 4. migrate the database if needed
 # 5. Collect static files
-su - django -s /bin/bash -c  << EOF
+sudo -u django -s /bin/bash << EOF
 set -e
 cd /var/lib/django/
 git clone $REPOSITORY_URL  
