@@ -9,8 +9,6 @@ then
     exit 1
 fi
 
-python check_config.py
-
 help()
 {
     echo "Ussage install.sh [-p|-h|-c]"
@@ -19,6 +17,9 @@ help()
     echo "p    Use iptables firewall instead of ufw"
     echo "c    Use a Caddifile without a website"
 }
+
+# smoke test that config file is ok
+python3 check_config.py
 
 # We support x86_64 or aarch64 for now
 platform=$(uname -m)
