@@ -130,7 +130,7 @@ su - postgres -c 'psql -f /var/lib/postgresql/db_init.sql'
 mkdir -p /var/www/
 
 # copy Caddyfile
-mkdir /etc/caddy/
+mkdir -p /etc/caddy/
 python montyplate.py $caddy_template > /etc/caddy/Caddyfile
 
 if [ "$caddy_template" == "Caddyfile.template" ]
@@ -166,11 +166,16 @@ systemctl enable gunicorn
 # start the caddy server
 systemctl start caddy
 
-echo "\n\n\n"
+echo -e "\n\n\n"
 echo "*********************************************************"
-echo "System installed succesfully!"
+echo "✨ ✨ System installed succesfully! ✨ ✨"
 echo "Please reboot your system."
 echo "If your remote repository is private, please add the key:"
+echo -e "\n"
 cat /var/lib/django/.ssh/id_ed25519.pub
+echo -e "\n"
+echo "To your GitHub repo with read access. Find more information at:"
+echo "https://docs.github.com/en/authentication/connecting-to-github-with-ssh/managing-deploy-keys#deploy-keys"
+echo -e "\n"
 echo "Once those two things are done. Just run as root:"
 echo "deploy.sh"
