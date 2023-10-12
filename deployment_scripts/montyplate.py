@@ -1,5 +1,5 @@
-import sys
 import configparser
+import sys
 
 """
 This script performs template substitution by replacing placeholders in an input

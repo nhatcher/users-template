@@ -2,6 +2,15 @@
 # makes sure the program ends if any of the comands produces an error
 set -e
 
+# makes sure we are root
+if [[ $EUID -ne 0 ]]
+then
+    echo "This script must be run as root" 1>&2
+    exit 1
+fi
+
+python check_config.py
+
 help()
 {
     echo "Ussage install.sh [-p|-h|-c]"
