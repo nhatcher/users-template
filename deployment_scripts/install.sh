@@ -18,7 +18,8 @@ help()
     echo "c    Use a Caddifile without a website"
 }
 
-# smoke test that config file is ok
+# Copy config file and smoke test that config file is ok
+cp config /etc/server_config.py
 python3 check_config.py
 
 # We support x86_64 or aarch64 for now
@@ -113,6 +114,9 @@ useradd --system --gid caddy --create-home --home-dir /var/lib/caddy --shell /us
 groupadd --system --force django
 useradd --system --gid django --create-home --home-dir /var/lib/django --shell /usr/sbin/nologin --comment "Django app runner" django  || echo "User django already exists"
 
+# create sshkey for the django user
+su - django -s /bin/bash -c 'ssh-keygen -t ed25519 -C "Deployment key" -N "" -f ~/.ssh/id_ed25519'
+
 
 # Install Postgres and dependencies
 apt install -y libpq-dev postgresql postgresql-contrib build-essential python3-dev
@@ -161,3 +165,11 @@ systemctl enable gunicorn
 
 # start the caddy server
 systemctl start caddy
+
+echo "*********************************************************"
+echo "System installed succesfully!"
+echo "Please reboot your system."
+echo "If your remote repository is private, please add the key:"
+cat /var/lib/django/.ssh/id_ed25519.pub
+echo "Once those two things are done. Just run as root:"
+echo "deploy.sh"

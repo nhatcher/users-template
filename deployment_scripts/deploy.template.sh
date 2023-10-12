@@ -11,11 +11,14 @@ systemctl stop gunicorn.service
 # remove old directory if exists
 rm -rf "/var/lib/django/$REPOSITORY_NAME"
 
-# Set django shell to bash
-chsh django -s /bin/bash
 
-# change to django
-sudo -i -u django /bin/bash << EOF
+# as the django user:
+# 1. clone the repository
+# 2. save the commit id
+# 3. activate the environment and install dependencies
+# 4. migrate the database if needed
+# 5. Collect static files
+su - django -s /bin/bash -c  << EOF
 set -e
 cd /var/lib/django/
 git clone $REPOSITORY_URL  
@@ -29,9 +32,6 @@ export DJANGO_SETTINGS_MODULE=settings.settings.production
 python manage.py migrate
 python manage.py collectstatic --settings=settings.settings.production --no-input
 EOF
-
-# Set django shell to nologin back
-chsh django -s /usr/sbin/nologin
 
 # copy files for the front end
 rm -rf /var/www/$REPOSITORY_NAME/
