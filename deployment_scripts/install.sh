@@ -19,7 +19,7 @@ help()
 }
 
 # Copy config file and smoke test that config file is ok
-cp config /etc/server_config.py
+cp config.ini /etc/server_config.ini
 python3 check_config.py
 
 # We support x86_64 or aarch64 for now
@@ -166,6 +166,7 @@ systemctl enable gunicorn
 # start the caddy server
 systemctl start caddy
 
+echo "\n\n\n"
 echo "*********************************************************"
 echo "System installed succesfully!"
 echo "Please reboot your system."
