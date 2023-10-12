@@ -7,7 +7,7 @@ Fill carefully the contents of `server_config.ini` and copy it to `/etc/server_c
 The just run:
 
 ```bash
-# ./install.s
+# ./install.sh
 ```
 
 ## Templates
@@ -16,7 +16,18 @@ Instead of using environmental variables we have all our secrets and settings in
 
 ## Firewall
 
-We use the uncomplicated firewall. There are a number of reason that might be not ok for your use case. 
+We use the uncomplicated firewall. There are a number of reason that might be not ok for your use case. If you want to use `iptables` directly run
+```bash
+# ./install.sh -p
+```
+
+## Caddyfile.template
+
+The present `Caddyfile` will also assume that your website is being served from this computer. If you just want to serve the application:
+
+```
+# ./install -c
+```
 
 ## Systemd services crash course
 Systemd is responsible for initializing and managing the system, including the startup and shutdown of services and daemons. It's widely used in modern Linux distributions to manage system processes and services. Makes sure some programs are run at startup and restarts them if something happens, doing also the role of a supervisor.
@@ -35,7 +46,11 @@ To interact with systemd, you use commands like systemctl:
 * `systemctl status caddy`. Checks the status of a service.
 * `systemctl list-units`. Lists all active units.
 
-Systemd has its own logging system called the Journal, which collects and stores log messages. You can use the journalctl command to view and search through logs.
+Systemd has its own logging system called the Journal, which collects and stores log messages. You can use the journalctl command to view and search through logs. For instance:
+
+```bash
+# journalctl -u caddy
+```
 
 
 A typical unit file will have three sections:

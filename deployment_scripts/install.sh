@@ -4,10 +4,11 @@ set -e
 
 help()
 {
-    echo "Ussage install.sh [-p|-h]"
+    echo "Ussage install.sh [-p|-h|-c]"
     echo "options"
     echo "h    UPrints this help and exists."
     echo "p    Use iptables firewall instead of ufw"
+    echo "c    Use a Caddifile without a website"
 }
 
 # We support x86_64 or aarch64 for now
@@ -25,16 +26,19 @@ fi
 
 # By default we will use Ubuntu's Uncomplicated FireWall.
 firewall="ufw"
+caddy_template="Caddyfile.template"
 
-while getopts ":h" option; do
+while getopts "hpnc" option; do
     case $option in
         h)
             help
             exit;;
         p)
             firewall="iptables";;
-        *)
-            echo "Unsuported option: $option"
+        c)
+            caddy_template="Caddyfile.onlyapp.template";;
+        \?)
+            echo "Unsuported option: -$OPTARG"
             help
             exit;;
     esac
@@ -42,7 +46,6 @@ done
 
 # Set DEBIAN_FRONTEND to noninteractive so it doesn't bug us that much
 export DEBIAN_FRONTEND=noninteractive
-
 
 # update the system
 apt update
@@ -61,7 +64,8 @@ then
     ufw allow http
     ufw allow https
     ufw --force enable
-else
+elif [ "$firewall" == "iptables" ]
+then
     # Run the firewall rules
     ./firewall-setup.sh
 
@@ -108,16 +112,19 @@ python montyplate.py db_init.template.sql > /var/lib/postgresql/db_init.sql
 chown postgres:postgres /var/lib/postgresql/db_init.sql
 su - postgres -c 'psql -f /var/lib/postgresql/db_init.sql'
 
-# copy service files
-cp services/caddy.service /etc/systemd/system/caddy.service
-python montyplate.py services/gunicorn.template.service > /etc/systemd/system/gunicorn.service
+# Create www directory if it does not exist
+mkdir -p /var/www/
 
 # copy Caddyfile
 mkdir /etc/caddy/
-python montyplate.py Caddyfile.template > /etc/caddy/Caddyfile
+python montyplate.py $caddy_template > /etc/caddy/Caddyfile
 
-# Create www directory if it does not exist
-mkdir -p /var/www/
+if [ "$caddy_template" == "Caddyfile.template" ]
+then
+    mkdir -p /var/www/site/
+    echo "This is the main landing page" > "/var/www/site/index.html"
+fi
+chown caddy:caddy /var/www/ -R
 
 # Create django log directory
 mkdir -p /var/log/django
@@ -130,6 +137,11 @@ chown caddy:caddy /var/log/caddy/
 # copy deploy script
 python montyplate.py deploy.template.sh > /bin/deploy.sh
 chmod +x /bin/deploy.sh
+
+
+# copy service files
+cp services/caddy.service /etc/systemd/system/caddy.service
+python montyplate.py services/gunicorn.template.service > /etc/systemd/system/gunicorn.service
 
 systemctl daemon-reload
 

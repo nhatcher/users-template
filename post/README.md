@@ -9,7 +9,7 @@ This should not only be regarded as a tutorial on how to setup and install every
 
 The guide is intended for a small team, maybe just one single person. If your team is larger than 5 people this guide might still work but might fall short in some respects. I am assuming you have almost no cash to dedicate to this project, we are going to do this on a shoestring. With all this in place if you make the project grow from a solo developer and no users to a few hundred users and 5 developer you will very easily upgrade the tools and hardware. I am assuming also you have some background in programming and you are comfortable in a Linux terminal. If you are not you really need a more technical partner that will help you with that. You will also not learn Django or python here although you should be ok if you know just some python and are willing to dedicate some time go go through the Django documentation.
 
-Although I am guiding you through the cheapest possible option, as soon as you start getting costumers you should consider investing in infrastructure. Maybe you will need a separate database server o a more performant server or paying for some of the services you are using.
+Although I am guiding you through the cheapest possible option, as soon as you start getting customers you should consider investing in infrastructure. Maybe you will need a separate database server o a more performant server or paying for some of the services you are using.
 
 This is not the only way to setup a server. There are tons of other ways of doing this. Some might want to use [Heroku](https://www.heroku.com/) or [Fly.io](https://fly.io/) or a completely managed [Cloudron](https://www.cloudron.io/). There are of course the big enterprise solutions like [Google Cloud](https://cloud.google.com/), [AWS](https://aws.amazon.com/) or [Microsoft Azure](https://azure.microsoft.com/)
 
@@ -682,6 +682,9 @@ Some logs may be updated to alerts or notifications depending on their importanc
 
 Stats are numbers of certain occurrences that we feel are important. Like number of accounts created or the number of times people logged in into the system.
 
+## Deployment if the repository is private
+
+We will need to use [Deploy keys](https://docs.github.com/en/authentication/connecting-to-github-with-ssh/managing-deploy-keys#deploy-keys)
 
 ## Refinements:
 

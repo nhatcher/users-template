@@ -1,5 +1,6 @@
 import configparser
 
+# optional: Sentry
 import sentry_sdk
 
 from .common import *  # noqa
@@ -10,11 +11,9 @@ config.read("/etc/server_config.ini")
 
 DEBUG = False
 
-# Quick-start development settings - unsuitable for production
-# See https://docs.djangoproject.com/en/4.2/howto/deployment/checklist/
 ALLOWED_HOSTS = [config["django"]["host"]]
 
-APP_URL = config["django"]["app_url"]
+APP_URL = f"https://{config['django']['host']}"
 STATIC_ROOT = config["django"]["static_root"]
 SECRET_KEY = config["django"]["secret_key"]
 
@@ -38,7 +37,7 @@ EMAIL_HOST_USER = config["email"]["host_user"]
 DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
 EMAIL_HOST_PASSWORD = config["email"]["host_password"]
 
-
+# optional: Sentry
 sentry_sdk.init(
     dsn=config["sentry"]["dns"],
     # Set traces_sample_rate to 1.0 to capture 100%
@@ -70,7 +69,7 @@ LOGGING = {
         },
         "file": {
             "class": "logging.FileHandler",
-            "filename": "debug.log",
+            "filename": "/var/log/django/django.log",
             "formatter": "verbose",
         },
         "sentry": {
