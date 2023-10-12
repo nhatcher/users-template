@@ -13,7 +13,7 @@ DEBUG = False
 
 ALLOWED_HOSTS = [config["django"]["host"]]
 
-APP_URL = f"https://{config['django']['host']}"
+APP_URL = f"https://{config['django']['host']}/"
 STATIC_ROOT = config["django"]["static_root"]
 SECRET_KEY = config["django"]["secret_key"]
 
