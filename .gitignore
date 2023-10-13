@@ -1,6 +1,6 @@
 .vscode
 .env
-deployment_scripts/config.ini
+deployment_scripts/server_config.ini
 db.sqlite3
 venv/*
 prod_env/*

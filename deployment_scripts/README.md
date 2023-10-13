@@ -1,8 +1,11 @@
 # Deployment scripts
 
-Generally speaking you should just scp the contents of this folder to your VPS.
+Generally speaking you should just scp the contents of this folder to your VPS:
 
-Fill carefully the contents of `server_config.ini` and copy it to `/etc/server_config.ini`
+```
+(local)$ rsync -a deployment_scripts/ root@example.com:~/
+(local)$ scp ~/secrets/server_config.ini root@example.com:~/deployment_scripts/
+```
 
 The just run:
 

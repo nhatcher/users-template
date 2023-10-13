@@ -47,3 +47,5 @@ chown caddy:caddy /var/www/ -R
 
 # start the service again
 systemctl start gunicorn.service
+
+echo -e "\n\n ✨✨Success!✨✨"

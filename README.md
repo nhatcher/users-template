@@ -31,6 +31,8 @@ Create a superuser
 (venv) $ python manage.py createsuperuser
 ```
 
+Install [caddy]()
+
 ## Running in a development environment
 
 You need to have three servers running:
