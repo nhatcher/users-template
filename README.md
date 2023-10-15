@@ -1,6 +1,6 @@
 # A simple template for a app with users
 
-If you're looking to kickstart your Django application and have it up and running in a production environment within a few hours, consider forking the code from this repository. For comprehensive step-by-step guidance and additional alternatives and options, check out the accompanying blog post. It provides in-depth insights into each of the steps, helping you make the most of your Django project.
+If you're looking to kickstart your Django application and have it up and running in a production environment within a few hours, consider forking the code from this repository. For comprehensive step-by-step guidance and additional alternatives and options, check out the accompanying [blog post](https://www.nhatcher.com/post/a-cto-on-a-shoestring/). It provides in-depth insights into each of the steps, helping you make the most of your Django project.
 
 ## Local installation
 
@@ -31,7 +31,8 @@ Create a superuser
 (venv) $ python manage.py createsuperuser
 ```
 
-Install [caddy]()
+Install [caddy](https://caddyserver.com/), only the binary in necessary. Note in particular that caddy shouldn't be running as a daemon in your local machine.
+I normally download the binary, copy it to `/opt/caddy/` and add the path to `PATH` so it can be run in a terminal.
 
 ## Running in a development environment
 
@@ -84,8 +85,10 @@ Don't install anything on your VPS or modify config files.
 Create an `install` directory in the remote machine and copy the contents of everything inside `deployment_scripts/` into that folder:
 
 ```
-jsmith@local:~/deployment_scripts$ scp -r * root@example.com:~/install/
+jsmith@local:~/$ scp -r * root@example.com:~/install/
 ```
+
+(You could also `rsync -a deployment_scripts root@example.com:~/` but that command is a bit dangerous)
 
 Create the file `/etc/server_config.ini` filling each entry carefully.
 
