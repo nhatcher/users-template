@@ -82,19 +82,18 @@ Once the droplet is created make sure the DNS is configured properly and points 
 
 Don't install anything on your VPS or modify config files.
 
-Create an `install` directory in the remote machine and copy the contents of everything inside `deployment_scripts/` into that folder:
+Create the file `server_config.ini` filling each entry carefully.
+
+Create an `deployments_scripts` directory in the remote machine and copy the contents of everything inside `deployment_scripts/` into that folder:
 
 ```
-jsmith@local:~/$ scp -r * root@example.com:~/install/
+jsmith@local:~/$ rsync -a deployment_scripts root@example.com:~/
+jsmith@local:~/$ scp ~/secrets/server_config.ini root@example.com:~/deployment_scripts/
 ```
-
-(You could also `rsync -a deployment_scripts root@example.com:~/` but that command is a bit dangerous)
-
-Create the file `/etc/server_config.ini` filling each entry carefully.
 
 In the remote computer, as a superuser run:
 ```
-root@remote:~/install# ./install.sh
+root@remote:~/deployment_scripts# ./install.sh
 ```
 
 After that reboot your system. Just (from any directory):
@@ -131,17 +130,18 @@ Now `root@example.com` should not work but `jsmith@example.com` should.
 ## Production logs and troubleshooting
 
 1. Issues with systemd
-Please refer to our [Systemd services crash course](https://github.com/nhatcher/users-template/tree/main/deployment_scripts#systemd-services-crash-course)
 
-2. Caddy and gunicorn logs
+   Please refer to our [Systemd services crash course](https://github.com/nhatcher/users-template/tree/main/deployment_scripts#systemd-services-crash-course)
 
-If configured correctly caddy access logs should be at `/var/log/caddy/access.log` and ``. A nice way to inspect those logs is [jq](https://jqlang.github.io/jq/):
+2. Caddy and Gunicorn logs
+
+If configured correctly Caddy access logs should be at `/var/log/caddy/access.log` and ``. A nice way to inspect those logs is [jq](https://jqlang.github.io/jq/):
 
 ```
 # tail -f /var/log/caddy/access.log | jq .request.uri
 ```
 
-Similarly logs created by gunicorn will be at `/var/log/django/access.log` and `/var/log/django/error.log`.
+Similarly logs created by Gunicorn will be at `/var/log/django/access.log` and `/var/log/django/error.log`.
 
 3. Application logs
 
