@@ -3,19 +3,17 @@
 set -e
 
 # makes sure we are root
-if [[ $EUID -ne 0 ]]
-then
+if [[ $EUID -ne 0 ]]; then
     echo "This script must be run as root" 1>&2
     exit 1
 fi
 
-help()
-{
-    echo "Ussage install.sh [-p|-h|-c]"
+function help() {
+    echo "Ussage install.sh -h -f <firewal> - c <caddyfile-template>"
     echo "options"
-    echo "h    UPrints this help and exists."
-    echo "p    Use iptables firewall instead of ufw"
-    echo "c    Use a Caddifile without a website"
+    echo "h    Prints this help and exists."
+    echo "f    Select firewal: ufw, iptables or none (Default ufw)"
+    echo "c    Select Caddyfile template (default Caddyfile.template)"
 }
 
 # Copy config file and smoke test that config file is ok
@@ -24,14 +22,12 @@ python3 check_config.py
 
 # We support x86_64 or aarch64 for now
 platform=$(uname -m)
-if [ "$platform" == "x86_64" ]
-then
+if [[ "${platform}" == "x86_64" ]]; then
 	caddy_file="caddy_2.7.4_linux_amd64.tar.gz"
-elif [ "$platform" == "aarch64" ]
-then
+elif [[ "${platform}" == "aarch64" ]]; then
 	caddy_file="caddy_2.7.4_linux_arm64.tar.gz"
 else
-	echo "Platform not supported $platform"
+	echo "Platform not supported ${platform}"
 	exit 1
 fi
 
@@ -39,17 +35,17 @@ fi
 firewall="ufw"
 caddy_template="Caddyfile.template"
 
-while getopts "hpnc" option; do
-    case $option in
+while getopts h:p:c: option; do
+    case "${option}" in
         h)
             help
             exit;;
-        p)
-            firewall="iptables";;
+        f)
+            firewall="${OPTARG}";;
         c)
-            caddy_template="Caddyfile.onlyapp.template";;
+            caddy_template="${OPTARG}";;
         \?)
-            echo "Unsuported option: -$OPTARG"
+            echo "Unsuported option: -${option}"
             help
             exit;;
     esac
@@ -60,14 +56,15 @@ export DEBIAN_FRONTEND=noninteractive
 
 # update the system
 apt update
-apt upgrade -y
+# -y assumes yes if there are questions
+# --force-confdef and --force-confold chose default config if there is otherwise old
+apt upgrade -y -o "Dpkg::Options::=--force-confdef" -o "Dpkg::Options::=--force-confold"
 
 # setup fail2ban
 apt install -y fail2ban
 
 # setup firewall
-if [ "$firewall" == "ufw" ]
-then
+if [[ "${firewall}" == "ufw" ]]; then
     apt install -y ufw
     ufw default deny incoming
     ufw default allow outgoing
@@ -75,8 +72,7 @@ then
     ufw allow http
     ufw allow https
     ufw --force enable
-elif [ "$firewall" == "iptables" ]
-then
+elif [[ "${firewall}" == "iptables" ]]; then
     # Run the firewall rules
     ./firewall-setup.sh
 
@@ -100,8 +96,8 @@ apt install -y python3-venv python-is-python3 git
 rm -rf downloads/
 mkdir downloads
 cd downloads
-wget https://github.com/caddyserver/caddy/releases/download/v2.7.4/$caddy_file
-tar -xf $caddy_file
+wget https://github.com/caddyserver/caddy/releases/download/v2.7.4/"${caddy_file}"
+tar -xf "${caddy_file}"
 mkdir -p /opt/caddy/
 cp caddy /opt/caddy/
 cd ..
@@ -131,10 +127,9 @@ mkdir -p /var/www/
 
 # copy Caddyfile
 mkdir -p /etc/caddy/
-python montyplate.py $caddy_template > /etc/caddy/Caddyfile
+python montyplate.py "${caddy_template}" > /etc/caddy/Caddyfile
 
-if [ "$caddy_template" == "Caddyfile.template" ]
-then
+if [[ "${caddy_template}" == "Caddyfile.template" ]]; then
     mkdir -p /var/www/site/
     echo "This is the main landing page" > "/var/www/site/index.html"
 fi

@@ -10,7 +10,7 @@ with open("/usr/share/dict/words") as f:
 
 def rand_name():
     return (
-        "_".join([words[random.randint(0, len(words) - 1)] for i in range(2)])
+        "-".join([words[random.randint(0, len(words) - 1)] for i in range(2)])
         .lower()
         .replace("'", "")
     )
