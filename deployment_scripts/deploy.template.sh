@@ -11,7 +11,7 @@ systemctl stop gunicorn.service
 # remove old directory if exists
 rm -rf "/var/lib/django/${REPOSITORY_NAME}"
 
-if [[ -z "$1" ]]
+if [[ -n "$1" ]]
 then
     GIT_BRANCH="$1"
 else
@@ -44,7 +44,7 @@ EOF
 # copy files for the front end
 rm -rf /var/www/"${REPOSITORY_NAME}"/
 mkdir /var/www/"${REPOSITORY_NAME}"/
-cp -r /var/lib/django/${REPOSITORY_NAME}"/frontend_test/* /var/www/"${REPOSITORY_NAME}"/
+cp -r /var/lib/django/"${REPOSITORY_NAME}"/frontend_test/* /var/www/"${REPOSITORY_NAME}"/
 
 # copy files for the admin pannel
 mkdir /var/www/"${REPOSITORY_NAME}"/static/
