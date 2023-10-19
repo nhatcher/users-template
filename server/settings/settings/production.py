@@ -11,7 +11,7 @@ config.read("/etc/server_config.ini")
 
 DEBUG = False
 
-ALLOWED_HOSTS = [config["django"]["host"]]
+ALLOWED_HOSTS = [config["django"]["host"], config["django"]["admin_host"]]
 
 APP_URL = f"https://{config['django']['host']}/"
 STATIC_ROOT = config["django"]["static_root"]

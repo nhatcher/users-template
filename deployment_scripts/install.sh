@@ -23,9 +23,9 @@ python3 check_config.py
 # We support x86_64 or aarch64 for now
 platform=$(uname -m)
 if [[ "${platform}" == "x86_64" ]]; then
-	caddy_file="caddy_2.7.4_linux_amd64.tar.gz"
+	caddy_file="caddy_2.7.5_linux_amd64.tar.gz"
 elif [[ "${platform}" == "aarch64" ]]; then
-	caddy_file="caddy_2.7.4_linux_arm64.tar.gz"
+	caddy_file="caddy_2.7.5_linux_arm64.tar.gz"
 else
 	echo "Platform not supported ${platform}"
 	exit 1
@@ -96,7 +96,7 @@ apt install -y python3-venv python-is-python3 git
 rm -rf downloads/
 mkdir downloads
 cd downloads
-wget https://github.com/caddyserver/caddy/releases/download/v2.7.4/"${caddy_file}"
+wget https://github.com/caddyserver/caddy/releases/download/v2.7.5/"${caddy_file}"
 tar -xf "${caddy_file}"
 mkdir -p /opt/caddy/
 cp caddy /opt/caddy/

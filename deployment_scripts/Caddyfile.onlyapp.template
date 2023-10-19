@@ -8,6 +8,16 @@
         # django API
         reverse_proxy /api/* localhost:8000
 
+        file_server
+}
+
+<django.admin_host> {
+        log {
+                output file /var/log/caddy/django_admin_access.log
+        }
+
+        root * /var/www/django-admin/
+
         # admin API
         reverse_proxy /admin/* localhost:8000
 

@@ -11,8 +11,7 @@ systemctl stop gunicorn.service
 # remove old directory if exists
 rm -rf "/var/lib/django/${REPOSITORY_NAME}"
 
-if [[ -n "$1" ]]
-then
+if [[ -n "$1" ]]; then
     GIT_BRANCH="$1"
 else
     GIT_BRANCH="main"
@@ -45,10 +44,12 @@ EOF
 rm -rf /var/www/"${REPOSITORY_NAME}"/
 mkdir /var/www/"${REPOSITORY_NAME}"/
 cp -r /var/lib/django/"${REPOSITORY_NAME}"/frontend_test/* /var/www/"${REPOSITORY_NAME}"/
+cp /var/lib/django/deployed_commit_id.txt /var/www/"${REPOSITORY_NAME}"/
 
 # copy files for the admin pannel
-mkdir /var/www/"${REPOSITORY_NAME}"/static/
-cp -r /var/lib/django/static/* /var/www/"${REPOSITORY_NAME}"/static/
+rm -rf /var/www/django_admin/
+mkdir -p /var/www/django_admin/static/
+cp -r /var/lib/django/static/* /var/www/django_admin/static/
 
 # make sure all is own by caddy user
 chown caddy:caddy /var/www/ -R
