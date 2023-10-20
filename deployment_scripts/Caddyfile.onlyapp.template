@@ -16,7 +16,7 @@
                 output file /var/log/caddy/django_admin_access.log
         }
 
-        root * /var/www/django-admin/
+        root * /var/www/django_admin/
 
         # admin API
         reverse_proxy /admin/* localhost:8000
